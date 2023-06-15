@@ -1,23 +1,41 @@
-app port digit info:
+### type:
+* master: from k8s
+* dev: from IDE as development
+* test: for test run
 
-* 1  : cluster   (minikube mk/4)
-* 2  : app       (soidc 0, stackjudge sj/1)
-* 3-4: service   (ids, psql, java backend, kotlin microservice)
-* 5  : https/ssl (true, false)
+### app port digit info:
+* 1: cluster     (minikube mk=4)
+* 2: app+service (soidc=0, stackjudge-backend=1, stackjudge-psql=2)
+* 3-4: service   (app, db)
+* 5: https/ssl   (1=true, 0=false, x=1+0)
 
-| cluster | app   | service | https/ssl | type | port  |
-|---------|-------|---------|-----------|------|-------|
-| mk      | soidc | ids     | http      | dev  | 40000 |
-| mk      | soidc | ids     | https     | dev  | 40001 |
-| mk      | soidc | ids     | http      | test | 40010 |
-| mk      | soidc | ids     | https     | test | 40011 |
-| mk      | soidc | psql    | http      | dev  | 40020 |
-| mk      | soidc | psql    | https     | dev  | 40021 |
-| mk      | soidc | psql    | http      | test | 40030 |
-| mk      | soidc | psql    | https     | test | 40031 |
-| mk      | sj    | backend | http      | dev  | 41000 |
-| mk      | sj    | backend | https     | dev  | 41001 |
-| mk      | sj    | backend | http      | test | 41010 |
-| mk      | sj    | backend | https     | test | 41011 |
-
-
+| cluster    | app   | service          | type   | port  |
+|------------|-------|------------------|--------|-------|
+| SimpleOIDC | ===   | ===              | ===    | ===   |
+| mk         | soidc | ids-app          | master | 4000x |
+| mk         | soidc | ids-app          | dev    | 4001x |
+| mk         | soidc | ids-psql         | dev    | 40010 |
+| mk         | soidc | ids-psql         | master | 40020 |
+| mk         | soidc | ids-psql         | test   | 40020 |
+| Stackjudge | ===   | ===              | ===    | ===   |
+| mk         | sj    | backend-app      | master | 4100x |
+| mk         | sj    | backend-app      | dev    | 4101x |
+| mk         | sj    | backend-psql     | master | 41020 |
+| mk         | sj    | backend-psql     | dev    | 41030 |
+| mk         | sj    | backend-psql     | test   | 41040 |
+| mk         | sj    | backend-redis    | master | 41050 |
+| mk         | sj    | backend-redis    | dev    | 41060 |
+| mk         | sj    | backend-redis    | test   | 41070 |
+| ---        | ---   | ---              | ---    | ---   |
+| mk         | sj    | frontend         | master | 4200x |
+| mk         | sj    | frontend         | dev    | 4201x |
+| ---        | ---   | ---              | ---    | ---   |
+| mk         | sj    | ids-app          | master | 4300x |
+| mk         | sj    | ids-app          | dev    | 4301x |
+| mk         | sj    | ids-psql         | master | 43020 |
+| mk         | sj    | ids-psql         | dev    | 43030 |
+| mk         | sj    | ids-psql         | test   | 43040 |
+| mk         | sj    | notification-app | master | 4400x |
+| mk         | sj    | notification-app | dev    | 4401x |
+| mk         | sj    | aws-app          | master | 4500x |
+| mk         | sj    | aws-app          | dev    | 4501x |
