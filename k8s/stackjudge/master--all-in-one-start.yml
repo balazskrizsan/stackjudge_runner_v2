@@ -3,22 +3,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: stackjudge-master
-  name: app-backend
+  name: backend-app
   labels:
-    app: app-backend-label
+    app: backend-app-label
 spec:
   replicas: 1
   selector:
     matchLabels:
-      service: app-backend
+      service: backend-app
   template:
     metadata:
       labels:
-        app: app-backend-label
-        service: app-backend
+        app: backend-app-label
+        service: backend-app
     spec:
+#      restartPolicy: Always
       containers:
-        - name: app-backend
+        - name: backend-app
           image: kbalazsworks/stackjudge_backend:master
           imagePullPolicy: Always
           ports:
@@ -39,7 +40,7 @@ spec:
             - name: HEALTH_CHECK_ENV_VAR_TEST
               value: "env var test"
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://postgres-service:5432/stackjudge"
+              value: "jdbc:postgresql://backend-psql-service:41030/stackjudge"
             - name: SPRING_DATASOURCE_USERNAME
               value: "admin"
             - name: SPRING_DATASOURCE_PASSWORD
@@ -50,6 +51,8 @@ spec:
               value: ""
             - name: HTTP_CORS_ORIGINS
               value: "http://localhost:4200"
+            - name: SJ_IDS_FULL_HOST
+              value: "http://identity-service-app:41050"
 #            - name: AWS_S3_CDN_BUCKET
 #              value: "stackjudge-cdn-dev-eu-central-1"
 #            - name: AWS_ACCESS_KEY
@@ -70,12 +73,12 @@ spec:
 #              value: True
 #            - name: SITE_FRONTEND_DOMAIN
 #              value: "http://localhost:4200"
-#            - name: SPRING_REDIS_HOST
-#              value: "sj_backend_redis"
-#            - name: SPRING_REDIS_PASSWORD
-#              value: ""
-#            - name: SPRING_REDIS_PORT
-#              value: "6379"
+            - name: SPRING_REDIS_HOST
+              value: "backend-redis-service"
+            - name: SPRING_REDIS_PASSWORD
+              value: ""
+            - name: SPRING_REDIS_PORT
+              value: "41060"
 #            - name: GOOGLE_MAPS_KEY
 #              value: "asd"
 #            - name: REDIS_ASPECT_CACHE_ENABLED
@@ -89,45 +92,49 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: stackjudge-master
-  name: app-backend
+  name: backend-app
   labels:
-    app: app-backend-label
-    service: app-backend
+    app: backend-app-label
+    service: backend-app-service
 spec:
   type: LoadBalancer
   selector:
-    app: app-backend-label
-    service: app-backend
+    app: backend-app-label
+    service: backend-app
   ports:
     - name: "http"
       protocol: TCP
       port: 41000
       targetPort: 80
 ---
-############################### Backend App - PSQL
+###
+###
+### Backend App - PSQL
+###
+###
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: stackjudge-master
-  name: postgres-deployment
+  name: backend-psql-deployment
   labels:
-    app: postgres
+    app: backend-psql-label
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: postgres
+      app: backend-psql-label
   template:
     metadata:
       labels:
-        app: postgres
+        app: backend-psql-label
     spec:
       containers:
         - name: postgres
           image: postgres:13
           ports:
             - containerPort: 5432
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           resources: {}
           env:
             - name: POSTGRES_USER
@@ -143,10 +150,165 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: stackjudge-master
-  name: postgres-service
+  name: backend-psql-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 41030
+      targetPort: 5432
+  selector:
+    app: backend-psql-label
+---
+###
+###
+### Backend App - Redis
+###
+###
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: stackjudge-master
+  name: backend-redis-deployment
+  labels:
+    app: backend-redis-label
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-redis-label
+  template:
+    metadata:
+      labels:
+        app: backend-redis-label
+    spec:
+      containers:
+        - name: redis
+          image: redis:6.2.6
+          ports:
+            - containerPort: 6379
+          imagePullPolicy: IfNotPresent
+          resources: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: stackjudge-master
+  name: backend-redis-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 41060
+      targetPort: 6379
+  selector:
+    app: backend-redis-label
+---
+###############################
+###############################
+############################### IDS
+###############################
+###############################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: stackjudge-master
+  name: identity-service-app
+  labels:
+    app: identity-service-app-label
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: identity-service-app
+  template:
+    metadata:
+      labels:
+        app: identity-service-app-label
+        service: identity-service-app
+    spec:
+      containers:
+        - name: identity-service-app
+          image: kbalazsworks/stackjudge_identity_service:master
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 200Mi
+          env:
+            - name: env
+              value: K8s
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: stackjudge-master
+  name: identity-service-app
+  labels:
+    app: identity-service-app-label
+    service: identity-service-app-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: identity-service-app-label
+    service: identity-service-app
+  ports:
+    - name: "http"
+      protocol: TCP
+      port: 41050
+      targetPort: 80
+###
+###
+### IDS - PSQL
+###
+###
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: stackjudge-master
+  name: identity-service-postgres-deployment
+  labels:
+    app: identity-service-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identity-service-postgres
+  template:
+    metadata:
+      labels:
+        app: identity-service-postgres
+    spec:
+      containers:
+        - name: identity-service-postgres
+          image: postgres:13
+          ports:
+            - containerPort: 5432
+          imagePullPolicy: IfNotPresent
+          resources: {}
+          env:
+            - name: POSTGRES_USER
+              value: admin
+            - name: POSTGRES_PASSWORD
+              value: admin_pass
+            - name: POSTGRES_DB
+              value: stackjudge
+            - name: PGDATA
+              value: /data/postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: stackjudge-master
+  name: identity-service-postgres-service
 spec:
   type: LoadBalancer
   ports:
     - port: 5432
   selector:
-    app: postgres
+    app: identity-service-postgres
