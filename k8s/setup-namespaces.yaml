@@ -25,3 +25,10 @@ metadata:
   name: stackjudge-test
   labels:
     name: stackjudge-test
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stackjudge-master
+  labels:
+    name: stackjudge-master
