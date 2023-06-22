@@ -84,8 +84,8 @@ spec:
       targetPort: 6379
   selector:
     app: backend-redis-label
-### IDS - PSQL
 ---
+### IDS - PSQL
 apiVersion: apps/v1
 kind: Deployment
 metadata:
