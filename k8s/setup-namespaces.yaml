@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: soidc-dev
+  labels:
+    name: soidc-dev
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: soidc-test
+  labels:
+    name: soidc-test
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stackjudge-dev
+  labels:
+    name: stackjudge-dev
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stackjudge-test
+  labels:
+    name: stackjudge-test
