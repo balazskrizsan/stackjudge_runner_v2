@@ -1,0 +1,102 @@
+############################### IDS
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: soidc-dev
+  name: app
+  labels:
+    app: app-ids
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: app
+  template:
+    metadata:
+      labels:
+        app: app-ids
+        service: app
+    spec:
+      containers:
+        - name: app
+          image: kbalazsworks/simple_oidc_ids6_e2e_test:master
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 200Mi
+          env:
+            - name: env
+              value: K8s
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: soidc-dev
+  name: app
+  labels:
+    app: app-ids
+    service: app
+spec:
+  type: LoadBalancer
+  selector:
+    app: app-ids
+    service: app
+  ports:
+    - name: "http"
+      protocol: TCP
+      port: 40010
+      targetPort: 80
+############################### POSTGRES
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: soidc-dev
+  name: postgres-deployment
+  labels:
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:13
+          ports:
+            - containerPort: 5432
+          imagePullPolicy: Always
+          resources: {}
+          env:
+            - name: POSTGRES_USER
+              value: admin
+            - name: POSTGRES_PASSWORD
+              value: admin_pass
+            - name: POSTGRES_DB
+              value: stackjudge
+            - name: PGDATA
+              value: /data/postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: soidc-dev
+  name: postgres-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 5432
+  selector:
+    app: postgres

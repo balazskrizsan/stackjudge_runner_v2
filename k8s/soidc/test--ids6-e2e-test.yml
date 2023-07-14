@@ -1,7 +1,8 @@
-# IDS
+############################### IDS
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: soidc-test
   name: app
   labels:
     app: app-ids
@@ -37,6 +38,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: soidc-test
   name: app
   labels:
     app: app-ids
@@ -49,13 +51,14 @@ spec:
   ports:
     - name: "http"
       protocol: TCP
-      port: 8090
+      port: 40000
       targetPort: 80
 ############################### POSTGRES
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: soidc-test
   name: postgres-deployment
   labels:
     app: postgres
@@ -89,6 +92,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: soidc-test
   name: postgres-service
 spec:
   type: LoadBalancer
