@@ -1,0 +1,134 @@
+### Backend App - PSQL
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: stackjudge-dev
+  name: backend-psql-deployment
+  labels:
+    app: backend-psql-label
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-psql-label
+  template:
+    metadata:
+      labels:
+        app: backend-psql-label
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:13
+          ports:
+            - containerPort: 5432
+          imagePullPolicy: IfNotPresent
+          resources: {}
+          env:
+            - name: POSTGRES_USER
+              value: admin
+            - name: POSTGRES_PASSWORD
+              value: admin_pass
+            - name: POSTGRES_DB
+              value: stackjudge
+            - name: PGDATA
+              value: /data/postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: stackjudge-dev
+  name: backend-psql-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 41030
+      targetPort: 5432
+  selector:
+    app: backend-psql-label
+---
+### Backend App - Redis
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: stackjudge-dev
+  name: backend-redis-deployment
+  labels:
+    app: backend-redis-label
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-redis-label
+  template:
+    metadata:
+      labels:
+        app: backend-redis-label
+    spec:
+      containers:
+        - name: redis
+          image: redis:6.2.6
+          ports:
+            - containerPort: 6379
+          imagePullPolicy: IfNotPresent
+          resources: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: stackjudge-dev
+  name: backend-redis-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 41060
+      targetPort: 6379
+  selector:
+    app: backend-redis-label
+### IDS - PSQL
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: stackjudge-dev
+  name: identity-service-psql-deployment
+  labels:
+    app: identity-service-psql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identity-service-psql
+  template:
+    metadata:
+      labels:
+        app: identity-service-psql
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:13
+          ports:
+            - containerPort: 5432
+          imagePullPolicy: IfNotPresent
+          resources: {}
+          env:
+            - name: POSTGRES_USER
+              value: admin
+            - name: POSTGRES_PASSWORD
+              value: admin_pass
+            - name: POSTGRES_DB
+              value: stackjudge
+            - name: PGDATA
+              value: /data/postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: stackjudge-dev
+  name: identity-service-psql-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 43030
+      targetPort: 5432
+  selector:
+    app: identity-service-psql
