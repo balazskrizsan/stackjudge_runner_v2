@@ -204,6 +204,66 @@ spec:
 ---
 ###############################
 ###############################
+############################### Frontend
+###############################
+###############################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: stackjudge-master
+  name: frontend-app
+  labels:
+    app: frontend-app-label
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: frontend-app
+  template:
+    metadata:
+      labels:
+        app: frontend-app-label
+        service: frontend-app
+    spec:
+      containers:
+        - name: frontend-app
+          image: kbalazsworks/stackjudge_frontend:master
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 200Mi
+            limits:
+              cpu: 200m
+              memory: 400Mi
+          env:
+            - name: FRONTEND_CONFIG
+              value: localvagrant
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: stackjudge-master
+  name: frontend-app
+  labels:
+    app: frontend-app-label
+    service: frontend-app-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: frontend-app-label
+    service: frontend-app
+  ports:
+    - name: "http"
+      protocol: TCP
+      port: 42000
+      targetPort: 80
+---
+###############################
+###############################
 ############################### IDS
 ###############################
 ###############################
