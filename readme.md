@@ -39,3 +39,11 @@
 | mk         | sj    | notification-app | dev    | 4401x |
 | mk         | sj    | aws-app          | master | 4500x |
 | mk         | sj    | aws-app          | dev    | 4501x |
+
+
+Starting the image based master:
+* Add to hosts file:
+  - 127.0.0.1 stackjudge.dev
+  - run: [master--all-in-one-start.yml](k8s%2Fstackjudge%2Fmaster--all-in-one-start.yml)
+  - run: minikube(.exe) tunnel
+  - optional: minikube(.exe) dashboard
