@@ -34,59 +34,60 @@ spec:
               memory: 400Mi
           env:
             - name: SERVER_PORT
-              value: "41000"
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SERVER_PORT
             - name: SERVER_ENV
-              value: "LOCAL_VAGRANT"
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SERVER_ENV
             - name: HEALTH_CHECK_ENV_VAR_TEST
-              value: "env var test"
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: HEALTH_CHECK_ENV_VAR_TEST
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://backend-psql-service:41030/stackjudge"
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SPRING_DATASOURCE_URL
             - name: SPRING_DATASOURCE_USERNAME
-              value: "admin"
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SPRING_DATASOURCE_USERNAME
             - name: SPRING_DATASOURCE_PASSWORD
-              value: "admin_pass"
-#            - name: IS_SEARCH_BOX_LOG_ENABLED"
-#              value: False
-            - name: ENV_SEARCHLY_URL
-              value: ""
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SPRING_DATASOURCE_PASSWORD
             - name: HTTP_CORS_ORIGINS
-              value: "http://localhost:4200"
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: HTTP_CORS_ORIGINS
             - name: SJ_IDS_FULL_HOST
-              value: "http://identity-service-app:41050"
-#            - name: AWS_S3_CDN_BUCKET
-#              value: "stackjudge-cdn-dev-eu-central-1"
-#            - name: AWS_ACCESS_KEY
-#              value: "AKIA5PU76MZEYED5O2EG"
-#            - name: AWS_SECRET_KEY
-#              value: "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"
-#            - name: FACEBOOK_CLIENT_ID
-#              value: "6256044054421319"
-#            - name: FACEBOOK_CLIENT_SECRET
-#              value: "02d0121396bc2c5f2a3e5713a620a7c2"
-#            - name: FACEBOOK_CALLBACK_URL
-#              value: "https://192.168.33.10/account/facebook-callbackd"
-#            - name: AUTH_JWT_SECRET
-#              value: "12345678901234567890123456789012"
-#            - name: SITE_DOMAIN
-#              value: "https://192.168.33.10"
-#            - name: SERVER_SSL_ENABLED
-#              value: True
-#            - name: SITE_FRONTEND_DOMAIN
-#              value: "http://localhost:4200"
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SJ_IDS_FULL_HOST
             - name: SPRING_REDIS_HOST
-              value: "backend-redis-service"
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SPRING_REDIS_HOST
             - name: SPRING_REDIS_PASSWORD
-              value: ""
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SPRING_REDIS_PASSWORD
             - name: SPRING_REDIS_PORT
-              value: "41060"
-#            - name: GOOGLE_MAPS_KEY
-#              value: "asd"
-#            - name: REDIS_ASPECT_CACHE_ENABLED
-#              value: False
-#            - name: SERVER_SSL_KEY_STORE
-#              value: "classpath:keystore/v2/sjdev.p12"
-#            - name: SERVER_SSL_KEY_STORE_PASSWORD
-#              value: "password"
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SPRING_REDIS_PORT
 ---
 apiVersion: v1
 kind: Service
@@ -322,7 +323,10 @@ spec:
               memory: 400Mi
           env:
             - name: env
-              value: K8s
+              valueFrom:
+                secretKeyRef:
+                  name: ids-secrets
+                  key: ENV
 ---
 apiVersion: v1
 kind: Service
