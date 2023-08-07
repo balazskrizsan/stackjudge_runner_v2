@@ -117,7 +117,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: stackjudge-master
-  name: backend-psql-deployment
+  name: backend-psql
   labels:
     app: backend-psql-label
 spec:
@@ -169,7 +169,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: stackjudge-master
-  name: backend-redis-deployment
+  name: backend-redis
   labels:
     app: backend-redis-label
 spec:
@@ -356,7 +356,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: stackjudge-master
-  name: identity-service-postgres-deployment
+  name: identity-service-postgres
   labels:
     app: identity-service-postgres
 spec:
