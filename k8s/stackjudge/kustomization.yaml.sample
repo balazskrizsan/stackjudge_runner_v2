@@ -1,0 +1,35 @@
+generatorOptions:
+  disableNameSuffixHash: true
+secretGenerator:
+  - name: backend-secrets
+    namespace: stackjudge-master
+    literals:
+      - SERVER_PORT=
+      - SERVER_ENV=LOCAL_VAGRANT
+      - HEALTH_CHECK_ENV_VAR_TEST="env var test"
+      - SPRING_DATASOURCE_URL="jdbc:postgresql://backend-psql-service:41030/stackjudge"
+      - SPRING_DATASOURCE_USERNAME=
+      - SPRING_DATASOURCE_PASSWORD=
+      - HTTP_CORS_ORIGINS=http://localhost:4200
+      - SJ_IDS_FULL_HOST=http://identity-service-app:
+#      - AWS_S3_CDN_BUCKET=
+#      - AWS_ACCESS_KEY=
+#      - AWS_SECRET_KEY=
+#      - FACEBOOK_CLIENT_ID=
+#      - FACEBOOK_CLIENT_SECRET=
+#      - FACEBOOK_CALLBACK_URL=
+#      - AUTH_JWT_SECRET=
+#      - SITE_DOMAIN=
+#      - SERVER_SSL_ENABLED=True
+#      - SITE_FRONTEND_DOMAIN=http://localhost:4200
+      - SPRING_REDIS_HOST=backend-redis-service
+      - SPRING_REDIS_PASSWORD=""
+      - SPRING_REDIS_PORT=
+#      - GOOGLE_MAPS_KEY=
+#      - REDIS_ASPECT_CACHE_ENABLED=False
+#      - SERVER_SSL_KEY_STORE=classpath:keystore/v2/sjdev.p12
+#      - SERVER_SSL_KEY_STORE_PASSWORD=password
+  - name: ids-secrets
+    namespace: stackjudge-master
+    literals:
+      - ENV=K8s
