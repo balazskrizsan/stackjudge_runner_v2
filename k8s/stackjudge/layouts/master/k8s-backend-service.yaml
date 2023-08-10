@@ -1,0 +1,204 @@
+############################### Backend App
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: stackjudge-master
+  name: backend-app
+  labels:
+    app: backend-app-label
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: backend-app
+  template:
+    metadata:
+      labels:
+        app: backend-app-label
+        service: backend-app
+    spec:
+#      restartPolicy: Always
+      containers:
+        - name: backend-app
+          image: kbalazsworks/stackjudge_backend:master
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 200m
+              memory: 200Mi
+            limits:
+              cpu: 400m
+              memory: 400Mi
+          env:
+            - name: SERVER_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SERVER_PORT
+            - name: SERVER_ENV
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SERVER_ENV
+            - name: HEALTH_CHECK_ENV_VAR_TEST
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: HEALTH_CHECK_ENV_VAR_TEST
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SPRING_DATASOURCE_URL
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SPRING_DATASOURCE_USERNAME
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SPRING_DATASOURCE_PASSWORD
+            - name: HTTP_CORS_ORIGINS
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: HTTP_CORS_ORIGINS
+            - name: SJ_IDS_FULL_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SJ_IDS_FULL_HOST
+            - name: SPRING_REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SPRING_REDIS_HOST
+            - name: SPRING_REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SPRING_REDIS_PASSWORD
+            - name: SPRING_REDIS_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secrets
+                  key: SPRING_REDIS_PORT
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: stackjudge-master
+  name: backend-app
+  labels:
+    app: backend-app-label
+    service: backend-app-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: backend-app-label
+    service: backend-app
+  ports:
+    - name: "http"
+      protocol: TCP
+      port: 41000
+      targetPort: 80
+---
+
+
+### Backend App - PSQL
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: stackjudge-master
+  name: backend-psql
+  labels:
+    app: backend-psql-label
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-psql-label
+  template:
+    metadata:
+      labels:
+        app: backend-psql-label
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:13
+          ports:
+            - containerPort: 5432
+          imagePullPolicy: IfNotPresent
+          resources: {}
+          env:
+            - name: POSTGRES_USER
+              value: admin
+            - name: POSTGRES_PASSWORD
+              value: admin_pass
+            - name: POSTGRES_DB
+              value: stackjudge
+            - name: PGDATA
+              value: /data/postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: stackjudge-master
+  name: backend-psql-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 41030
+      targetPort: 5432
+  selector:
+    app: backend-psql-label
+---
+
+
+### Backend App - Redis
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: stackjudge-master
+  name: backend-redis
+  labels:
+    app: backend-redis-label
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-redis-label
+  template:
+    metadata:
+      labels:
+        app: backend-redis-label
+    spec:
+      containers:
+        - name: redis
+          image: redis:6.2.6
+          ports:
+            - containerPort: 6379
+          imagePullPolicy: IfNotPresent
+          resources: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: stackjudge-master
+  name: backend-redis-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 41060
+      targetPort: 6379
+  selector:
+    app: backend-redis-label

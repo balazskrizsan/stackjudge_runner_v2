@@ -1,0 +1,109 @@
+############################### IDS App
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: stackjudge-master
+  name: identity-service-app
+  labels:
+    app: identity-service-app-label
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: identity-service-app
+  template:
+    metadata:
+      labels:
+        app: identity-service-app-label
+        service: identity-service-app
+    spec:
+      containers:
+        - name: identity-service-app
+          image: kbalazsworks/stackjudge_identity_service:master
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 200m
+              memory: 200Mi
+            limits:
+              cpu: 400m
+              memory: 400Mi
+          env:
+            - name: env
+              valueFrom:
+                secretKeyRef:
+                  name: ids-secrets
+                  key: ENV
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: stackjudge-master
+  name: identity-service-app
+  labels:
+    app: identity-service-app-label
+    service: identity-service-app-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: identity-service-app-label
+    service: identity-service-app
+  ports:
+    - name: "http"
+      protocol: TCP
+      port: 41050
+      targetPort: 80
+---
+
+
+### IDS - PSQL
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: stackjudge-master
+  name: identity-service-postgres
+  labels:
+    app: identity-service-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identity-service-postgres
+  template:
+    metadata:
+      labels:
+        app: identity-service-postgres
+    spec:
+      containers:
+        - name: identity-service-postgres
+          image: postgres:13
+          ports:
+            - containerPort: 5432
+          imagePullPolicy: IfNotPresent
+          resources: {}
+          env:
+            - name: POSTGRES_USER
+              value: admin
+            - name: POSTGRES_PASSWORD
+              value: admin_pass
+            - name: POSTGRES_DB
+              value: stackjudge
+            - name: PGDATA
+              value: /data/postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: stackjudge-master
+  name: identity-service-postgres-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 5432
+  selector:
+    app: identity-service-postgres
