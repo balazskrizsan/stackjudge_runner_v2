@@ -137,15 +137,9 @@ spec:
             - containerPort: 5432
           imagePullPolicy: IfNotPresent
           resources: {}
-          env:
-            - name: POSTGRES_USER
-              value: admin
-            - name: POSTGRES_PASSWORD
-              value: admin_pass
-            - name: POSTGRES_DB
-              value: stackjudge
-            - name: PGDATA
-              value: /data/postgres
+          envFrom:
+            - configMapRef:
+                name: insecure-psql-config
 ---
 apiVersion: v1
 kind: Service

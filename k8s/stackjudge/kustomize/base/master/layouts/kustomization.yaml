@@ -2,6 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
+  - ./k8s-insecure-psql-configmap.yaml
   - ./k8s-backend-service.yaml
   - ./k8s-ids-service.yaml
   - ./k8s-frontend-service.yaml
