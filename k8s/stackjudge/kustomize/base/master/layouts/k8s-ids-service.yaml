@@ -32,11 +32,21 @@ spec:
               cpu: 400m
               memory: 400Mi
           env:
-            - name: env
+            - name: PsqlConnectionString
               valueFrom:
                 secretKeyRef:
                   name: ids-secrets
-                  key: ENV
+                  key: PSQL_CONNECTION_STRING
+#            - name: LOGGING__LOGLEVEL__MICROSOFT
+#              valueFrom:
+#                secretKeyRef:
+#                  name: ids-secrets
+#                  key: LOGGING__LOGLEVEL__MICROSOFT
+#            - name: ASPNETCORE_URLS
+#              valueFrom:
+#                secretKeyRef:
+#                  name: ids-secrets
+#                  key: ASPNETCORE_URLS
 ---
 apiVersion: v1
 kind: Service

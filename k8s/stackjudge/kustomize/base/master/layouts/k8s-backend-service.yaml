@@ -51,18 +51,18 @@ spec:
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:
-                  name: backend-secrets
-                  key: SPRING_DATASOURCE_URL
+                  name: insecure-psql-secrets
+                  key: PSQL_CONNECTION_STRING
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: backend-secrets
-                  key: SPRING_DATASOURCE_USERNAME
+                  name: insecure-psql-secrets
+                  key: PSQL_USER
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: backend-secrets
-                  key: SPRING_DATASOURCE_PASSWORD
+                  name: insecure-psql-secrets
+                  key: PSQL_PASSWORD
             - name: HTTP_CORS_ORIGINS
               valueFrom:
                 secretKeyRef:
