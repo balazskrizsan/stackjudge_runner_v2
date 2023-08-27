@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: balazskrizsancom
+  name: route53-updater-home
+  labels:
+    app: route53-updater-home-label
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: route53-updater-home
+  template:
+    metadata:
+      labels:
+        app: route53-updater-home-label
+        service: route53-updater-home
+    spec:
+      containers:
+        - name: route53-updater-home
+          image: crazymax/ddns-route53:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 200Mi
+          env:
+            - name: TZ
+              valueFrom:
+                secretKeyRef:
+                  name: balazskrizsancom-home-secrets
+                  key: TZ
+            - name: SCHEDULE
+              valueFrom:
+                secretKeyRef:
+                  name: balazskrizsancom-home-secrets
+                  key: SCHEDULE
+            - name: LOG_LEVEL
+              valueFrom:
+                secretKeyRef:
+                  name: balazskrizsancom-home-secrets
+                  key: LOG_LEVEL
+            - name: LOG_JSON
+              valueFrom:
+                secretKeyRef:
+                  name: balazskrizsancom-home-secrets
+                  key: LOG_JSON
+            - name: DDNSR53_CREDENTIALS_ACCESSKEYID
+              valueFrom:
+                secretKeyRef:
+                  name: balazskrizsancom-home-secrets
+                  key: DDNSR53_CREDENTIALS_ACCESSKEYID
+            - name: DDNSR53_CREDENTIALS_SECRETACCESSKEY
+              valueFrom:
+                secretKeyRef:
+                  name: balazskrizsancom-home-secrets
+                  key: DDNSR53_CREDENTIALS_SECRETACCESSKEY
+            - name: DDNSR53_ROUTE53_HOSTEDZONEID
+              valueFrom:
+                secretKeyRef:
+                  name: balazskrizsancom-home-secrets
+                  key: DDNSR53_ROUTE53_HOSTEDZONEID
+            - name: DDNSR53_ROUTE53_RECORDSSET_0_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: balazskrizsancom-home-secrets
+                  key: DDNSR53_ROUTE53_RECORDSSET_0_NAME
+            - name: DDNSR53_ROUTE53_RECORDSSET_0_TYPE
+              valueFrom:
+                secretKeyRef:
+                  name: balazskrizsancom-home-secrets
+                  key: DDNSR53_ROUTE53_RECORDSSET_0_TYPE
+            - name: DDNSR53_ROUTE53_RECORDSSET_0_TTL
+              valueFrom:
+                secretKeyRef:
+                  name: balazskrizsancom-home-secrets
+                  key: DDNSR53_ROUTE53_RECORDSSET_0_TTL
