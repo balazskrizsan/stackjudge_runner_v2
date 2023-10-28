@@ -1,1 +1,2 @@
 k8s/stackjudge/kustomize/base/master/secrets/*.yaml
+k8s/balazskrizsan_com/home_ddns/secrets/*.yaml
