@@ -32,3 +32,17 @@ metadata:
   name: stackjudge-master
   labels:
     name: stackjudge-master
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: balazskrizsancom
+  labels:
+    name: balazskrizsancom
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ai
+  labels:
+    name: ai
