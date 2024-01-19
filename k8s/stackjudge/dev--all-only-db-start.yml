@@ -132,3 +132,52 @@ spec:
       targetPort: 5432
   selector:
     app: identity-service-psql
+
+---
+### STACKJUDGE-AWS - PSQL
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: stackjudge-dev
+  name: stackjudge-aws-psql-deployment
+  labels:
+    app: stackjudge-aws-psql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stackjudge-aws-psql
+  template:
+    metadata:
+      labels:
+        app: stackjudge-aws-psql
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:13
+          ports:
+            - containerPort: 5432
+          imagePullPolicy: IfNotPresent
+          resources: {}
+          env:
+            - name: POSTGRES_USER
+              value: admin
+            - name: POSTGRES_PASSWORD
+              value: admin_pass
+            - name: POSTGRES_DB
+              value: stackjudge
+            - name: PGDATA
+              value: /data/postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: stackjudge-dev
+  name: stackjudge-aws-psql-service
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 45030
+      targetPort: 5432
+  selector:
+    app: stackjudge-aws-psql
